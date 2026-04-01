@@ -25,9 +25,9 @@ Build a scheduling feature. Here's what we need:
 
 ```bash
 cp .env.example .env
-# Edit .env with your database connection string
+# Edit .env with your database connection string (Supabase transaction pooler URL recommended)
 pnpm install
-pnpm db:generate
+pnpm db:reset    # drop any existing tables (safe to skip on a fresh database)
 pnpm db:migrate
 pnpm db:seed
 pnpm dev
