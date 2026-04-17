@@ -6,6 +6,14 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
+export const tenants = pgTable("tenants", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 128 }).notNull(),
+  phone: varchar("phone", { length: 32 }).notNull().unique(),
+  email: varchar("email", { length: 256 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const technicians = pgTable("technicians", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: varchar("name", { length: 128 }).notNull(),
@@ -21,9 +29,10 @@ export const workOrders = pgTable("work_orders", {
   status: varchar("status", { length: 32 }).notNull().default("open"),
   priority: varchar("priority", { length: 32 }).notNull().default("normal"),
 
-  // Tenant info
-  tenantName: varchar("tenant_name", { length: 128 }).notNull(),
-  tenantPhone: varchar("tenant_phone", { length: 32 }).notNull(),
+  // Tenant (FK)
+  tenantId: uuid("tenant_id")
+    .notNull()
+    .references(() => tenants.id),
 
   // Property
   propertyAddress: varchar("property_address", { length: 256 }).notNull(),

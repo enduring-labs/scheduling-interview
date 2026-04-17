@@ -1,9 +1,22 @@
 import { db } from "@/lib/db";
-import { workOrders, technicians } from "@/lib/db/schema";
-import { isNull } from "drizzle-orm";
+import { workOrders, technicians, tenants } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export default async function DispatchPage() {
-  const orders = await db.select().from(workOrders);
+  const orders = await db
+    .select({
+      id: workOrders.id,
+      title: workOrders.title,
+      description: workOrders.description,
+      status: workOrders.status,
+      priority: workOrders.priority,
+      tenantName: tenants.name,
+      propertyAddress: workOrders.propertyAddress,
+      unitNumber: workOrders.unitNumber,
+      assignedTechnicianId: workOrders.assignedTechnicianId,
+    })
+    .from(workOrders)
+    .innerJoin(tenants, eq(workOrders.tenantId, tenants.id));
   const techs = await db.select().from(technicians);
 
   const unassigned = orders.filter((wo) => !wo.assignedTechnicianId);
